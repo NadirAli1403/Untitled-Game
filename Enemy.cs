@@ -7,6 +7,7 @@ public class Enemy : Character
     [SerializeField] protected float attackCd;
     private int dmg;
     private float cdTimer;
+    
 
 
 

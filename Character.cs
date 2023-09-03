@@ -100,6 +100,7 @@ public abstract class Character : MonoBehaviour
     protected virtual void handleMovement()
     {
         move();
+        myAnimator.SetFloat("Speed", Mathf.Abs(direction));
         turnAround(direction);
     }
 

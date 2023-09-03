@@ -19,11 +19,6 @@ public class Player : Character
         direction = Input.GetAxis("Horizontal");
         attack();
     }
-    protected override void handleMovement()
-    {
-        base.handleMovement();
-        myAnimator.SetFloat("Speed", Mathf.Abs(direction));
-    }
 
     protected override void handleJumping()
     {
