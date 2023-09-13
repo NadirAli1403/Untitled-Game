@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Animator))]
@@ -12,7 +13,8 @@ public abstract class Character : MonoBehaviour
     public Rigidbody2D rb2D;
     public Animator myAnimator;
     public BoxCollider2D boxCollider;
-    protected bool hasHit = false;
+    protected internal bool hasHit = false;
+    public Transform characterTransform;
 
     [Header("Movement Variables")]
     [SerializeField] protected float speed = 1.0f;
@@ -33,18 +35,21 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected LayerMask enemyLayers;
     [SerializeField] protected float attackLength;
     [SerializeField] protected float attackRange = 0.5f;
-    [SerializeField] protected Transform attackPoint;
+    [SerializeField] protected internal Transform attackPoint;
 
 
 
-    //[Header("Character Stats")]
-
+    [Header("Character Stats")]
+    [SerializeField] protected int hitPoints;
+    [SerializeField] protected int damage;
+    protected bool isPlayer = false;
 
     #region monos
     public virtual void Start()
     {
         rb2D = GetComponent<Rigidbody2D>();
         myAnimator = GetComponent<Animator>();
+        characterTransform = GetComponent<Transform>();
         jumpTimeCounter = jumpTime;
 
     }
@@ -68,6 +73,7 @@ public abstract class Character : MonoBehaviour
         // handles mechanics/physics
         handleMovement();
         layerHandler();
+        myAnimator.ResetTrigger("Hurt");
     }
 
     #endregion
@@ -90,8 +96,31 @@ public abstract class Character : MonoBehaviour
 
         foreach (Collider2D enemy in hitEnemies)
         {
-            Debug.Log("Hit" + enemy);
+
+
             hasHit = true;
+
+            Character character = enemy.GetComponent<Character>();
+
+            if(character!=null)
+            {
+                if(character.isPlayer && character.hasHit)
+                {
+                    Debug.Log("Test");
+                }
+                else
+                {
+                    character.myAnimator.SetTrigger("Hurt");
+                    character.hitPoints -= damage;
+                    Debug.Log(enemy + " " + character.hitPoints);
+
+                }
+                if(character.hitPoints <= 0 && !character.isPlayer)
+                {
+                    Destroy(character);
+                }
+            }
+
         }
     }
     #endregion
@@ -144,3 +173,24 @@ public abstract class Character : MonoBehaviour
 }
 
         #endregion
+
+            //GameObject player = enemy.gameObject;
+            //Debug.Log("Player is here");
+            //Transform playerTransform = player.transform;
+            //Vector2 playerPos = playerTransform.position;
+            //Vector2 enemyAttackPos = attackPoint.position;
+            //float distance = Vector2.Distance(playerPos, enemyAttackPos);
+            //float nearMissTolerance = 1.5f;
+
+            //if (distance < attackRange * nearMissTolerance)
+            //{
+            //    // The player is within the attack range, so it's a hit
+            //    Debug.Log("Hit player");
+            //    // Handle the hit here, e.g., reduce player health
+            //}
+            //else
+            //{
+            //    // The player dodged the attack at the last second
+            //    Debug.Log("Missed player");
+            //    // Handle the miss here, e.g., play a dodge animation
+            //}

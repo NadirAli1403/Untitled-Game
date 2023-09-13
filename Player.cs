@@ -12,6 +12,7 @@ public class Player : Character
     {
         base.Start();
         speed = runSpeed;
+        isPlayer = true;
     }
     public override void Update()
     {
@@ -77,7 +78,7 @@ public class Player : Character
             {
                 myAnimator.ResetTrigger("Attack_2");
                 myAnimator.SetTrigger("Attack_3");
-                attackLength = Time.time;   
+                attackLength = Time.time;
             }
         }
 
@@ -87,6 +88,7 @@ public class Player : Character
             myAnimator.ResetTrigger("Attack_1");
             myAnimator.ResetTrigger("Attack_2");
             myAnimator.ResetTrigger("Attack_3");
+            hasHit = false;
   
         }
         if (attackCounter > 3 || Time.time - attackLength > cooldown)

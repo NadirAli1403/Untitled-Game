@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Enemy : Character
 {
+    [Header("Enemy Specific")]
     [SerializeField] protected float attackCd;
     private int dmg;
     private float cdTimer;
@@ -22,12 +23,23 @@ public class Enemy : Character
         if (cdTimer >= attackCd)
         {
             attack();
-            cdTimer %= attackCd;
+            if (hasHit)
+            {
+                myAnimator.SetBool("Attack",false);
+                cdTimer %= attackCd;
+                hasHit = false;
+            }
         }
 
 
 
 
+    }
+
+    protected override void attack()
+    {
+        base.attack();
+            myAnimator.SetBool("Attack", true);
     }
 
     private bool PlayerInSight()
