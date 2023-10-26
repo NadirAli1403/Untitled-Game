@@ -8,7 +8,8 @@ public class Enemy : Character
     [SerializeField] protected float attackCd;
     private int dmg;
     private float cdTimer;
-    
+    private float attackAnimationDuration;
+
 
 
 
@@ -17,29 +18,22 @@ public class Enemy : Character
     {
         base.Update();
         PlayerInSight();
-        cdTimer += Time.deltaTime; 
+        cdTimer += Time.deltaTime;
 
 
         if (cdTimer >= attackCd)
         {
+            StartCoroutine(AttackCoroutine());
             attack();
-            if (hasHit)
-            {
-                myAnimator.SetBool("Attack",false);
-                cdTimer %= attackCd;
-                hasHit = false;
-            }
         }
-
-
-
-
     }
 
-    protected override void attack()
+    private IEnumerator AttackCoroutine()
     {
-        base.attack();
-            myAnimator.SetBool("Attack", true);
+        myAnimator.SetBool("Attack", true);
+        yield return new WaitForSeconds(attackAnimationDuration); // Wait for the attack animation to finish
+        myAnimator.SetBool("Attack", false); // Reset the attack animation state
+        cdTimer = 0f; // Reset the cooldown timer
     }
 
     private bool PlayerInSight()

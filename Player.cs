@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class Player : Character
 {
+    [Header("Slide Attributes")]
+    [SerializeField] protected float slideVelocityMultiplier = 2f;
+    public bool isSliding = false;
+    [SerializeField] protected float slideDuration = 0.5f; 
+    protected float slideTimer = 0f;
     private float runSpeed = 2.0f;
     private int attackCounter = 0;
     private float cooldown = 2f;
+
 
     public override void Start()
     {
@@ -19,6 +25,7 @@ public class Player : Character
         base.Update();
         direction = Input.GetAxis("Horizontal");
         attack();
+        handleSliding();
     }
 
     protected override void handleJumping()
@@ -55,30 +62,65 @@ public class Player : Character
         }
     }
 
+    protected virtual void handleSliding()
+    {
+        if (isPlayer && Input.GetKeyDown(KeyCode.C) && isGrounded && !isSliding)
+        {
+            StartSlide();
+        }
+
+        // Check if sliding
+        if (isSliding)
+        {
+            slideTimer -= Time.deltaTime;
+            if (slideTimer <= 0f)
+            {
+                StopSlide();
+            }
+        }
+    }
+    protected virtual void StartSlide()
+    {
+        isSliding = true;
+        slideTimer = slideDuration;
+        speed = speed * slideVelocityMultiplier;
+        myAnimator.SetBool("Sliding", true); // Set a trigger in your animator to play the sliding animation
+    }
+
+    protected virtual void StopSlide()
+    {
+        speed = 2;
+        isSliding = false;
+        myAnimator.SetBool("Sliding", false); // Reset the sliding animation trigger
+    }
+
     protected override void attack()
     {
         if (Input.GetMouseButtonDown(0))
         {
             base.attack();
-            attackCounter += 1;
+            attackCounter ++;
             rb2D.velocity = new Vector2(0, rb2D.velocity.y);
 
-            if (attackCounter == 1)
+            switch(attackCounter)
             {
+
+            case 1:
                 myAnimator.SetTrigger("Attack_1");
                 attackLength = Time.time;
-            }
-            else if (attackCounter == 2)
-            {
+                break;
+            
+            case 2:
                 myAnimator.ResetTrigger("Attack_1");
                 myAnimator.SetTrigger("Attack_2");
                 attackLength = Time.time;
-            }
-            else if (attackCounter == 3)
-            {
+                break;
+
+            case 3:
                 myAnimator.ResetTrigger("Attack_2");
                 myAnimator.SetTrigger("Attack_3");
                 attackLength = Time.time;
+                break;
             }
         }
 

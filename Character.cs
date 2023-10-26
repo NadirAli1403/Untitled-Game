@@ -40,9 +40,12 @@ public abstract class Character : MonoBehaviour
 
 
     [Header("Character Stats")]
-    [SerializeField] protected int hitPoints;
+    [SerializeField] public int hitPoints;
     [SerializeField] protected int damage;
+    [SerializeField] public int maxHealth;
     protected bool isPlayer = false;
+
+    
 
     #region monos
     public virtual void Start()
@@ -106,9 +109,10 @@ public abstract class Character : MonoBehaviour
             {
                 if(character.isPlayer && character.hasHit)
                 {
+                    character.hitPoints -= damage;
                     Debug.Log("Test");
                 }
-                else
+                else    
                 {
                     character.myAnimator.SetTrigger("Hurt");
                     character.hitPoints -= damage;
