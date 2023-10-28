@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class Player : Character
 {
+    [Header("Components")]
+    [SerializeField] public HealthUI healthUI;
     [Header("Slide Attributes")]
     [SerializeField] protected float slideVelocityMultiplier = 2f;
     public bool isSliding = false;
-    [SerializeField] protected float slideDuration = 0.5f; 
+    [SerializeField] protected float slideDuration = 0.5f;
     protected float slideTimer = 0f;
     private float runSpeed = 2.0f;
     private int attackCounter = 0;
@@ -17,15 +19,17 @@ public class Player : Character
     public override void Start()
     {
         base.Start();
+        healthUI = GetComponent<HealthUI>();
         speed = runSpeed;
         isPlayer = true;
     }
     public override void Update()
     {
         base.Update();
-        direction = Input.GetAxis("Horizontal");
+        direction = Input.GetAxis("Horizontal"); //this is for player
         attack();
         handleSliding();
+        healthUI.UpdateHealthUI(hitPoints, maxHealth);
     }
 
     protected override void handleJumping()
@@ -37,7 +41,6 @@ public class Player : Character
             myAnimator.ResetTrigger("Jumped");
 
         }
-
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             jump();

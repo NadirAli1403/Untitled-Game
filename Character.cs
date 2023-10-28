@@ -45,7 +45,6 @@ public abstract class Character : MonoBehaviour
     [SerializeField] public int maxHealth;
     protected bool isPlayer = false;
 
-    
 
     #region monos
     public virtual void Start()
@@ -105,25 +104,31 @@ public abstract class Character : MonoBehaviour
 
             Character character = enemy.GetComponent<Character>();
 
-            if(character!=null)
+            if (character != null)
             {
-                if(character.isPlayer && character.hasHit)
-                {
-                    character.hitPoints -= damage;
-                    Debug.Log("Test");
-                }
-                else    
-                {
-                    character.myAnimator.SetTrigger("Hurt");
-                    character.hitPoints -= damage;
-                    Debug.Log(enemy + " " + character.hitPoints);
+                //if (character.isPlayer)
+                //{
 
-                }
-                if(character.hitPoints <= 0 && !character.isPlayer)
-                {
-                    Destroy(character);
-                }
+                //    character.hitPoints -= damage - 1;
+                //    damaged(character);
+                //    Debug.Log("Test");
+                //}
+                //else
+                //{
+                //    character.myAnimator.SetTrigger("Hurt");
+                //    character.hitPoints -= damage;
+                //    Debug.Log(enemy + " " + character.hitPoints);
+
+                //}
+                //if (character.hitPoints <= 0 && !character.isPlayer)
+                //{
+                //    Destroy(character);
+                //}
+
+                character.damaged();
+                Debug.Log(enemy + " " + character.hitPoints);
             }
+            hasHit = false;
 
         }
     }
@@ -139,6 +144,7 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void handleJumping()
     {
+        rb2D.angularDrag = 0;
         jump();
     }
 
@@ -164,6 +170,11 @@ public abstract class Character : MonoBehaviour
         }
     }
 
+    protected virtual void damaged()
+    {
+        hitPoints -= damage;
+    }
+
     protected virtual void OnDrawGizmos()
     {
         Gizmos.DrawSphere(groundCheck.position, radOCircle);
@@ -176,25 +187,25 @@ public abstract class Character : MonoBehaviour
     }
 }
 
-        #endregion
+#endregion
 
-            //GameObject player = enemy.gameObject;
-            //Debug.Log("Player is here");
-            //Transform playerTransform = player.transform;
-            //Vector2 playerPos = playerTransform.position;
-            //Vector2 enemyAttackPos = attackPoint.position;
-            //float distance = Vector2.Distance(playerPos, enemyAttackPos);
-            //float nearMissTolerance = 1.5f;
+//GameObject player = enemy.gameObject;
+//Debug.Log("Player is here");
+//Transform playerTransform = player.transform;
+//Vector2 playerPos = playerTransform.position;
+//Vector2 enemyAttackPos = attackPoint.position;
+//float distance = Vector2.Distance(playerPos, enemyAttackPos);
+//float nearMissTolerance = 1.5f;
 
-            //if (distance < attackRange * nearMissTolerance)
-            //{
-            //    // The player is within the attack range, so it's a hit
-            //    Debug.Log("Hit player");
-            //    // Handle the hit here, e.g., reduce player health
-            //}
-            //else
-            //{
-            //    // The player dodged the attack at the last second
-            //    Debug.Log("Missed player");
-            //    // Handle the miss here, e.g., play a dodge animation
-            //}
+//if (distance < attackRange * nearMissTolerance)
+//{
+//    // The player is within the attack range, so it's a hit
+//    Debug.Log("Hit player");
+//    // Handle the hit here, e.g., reduce player health
+//}
+//else
+//{
+//    // The player dodged the attack at the last second
+//    Debug.Log("Missed player");
+//    // Handle the miss here, e.g., play a dodge animation
+//}

@@ -1,72 +1,61 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class HealthUI : MonoBehaviour
 {
-    public Image[] heartContainers;
+    public List<Image> heartContainers;
     public Sprite fullHeartSprite;
     public Sprite threeQuarterHeartSprite;
     public Sprite halfHeartSprite;
     public Sprite quarterHeartSprite;
     public Sprite emptyHeartSprite;
 
-    private Player player; // Reference to the Player script
 
-    void Start()
+
+    public void UpdateHealthUI(int currentHealth, int maxHealth)
     {
-        // Get the Player component from the same GameObject
-        if (!TryGetComponent<Player>(out player))
+        int heartFraction = currentHealth % 4;
+        int numOfContainers = heartContainers.Count;
+        int currentContainers = numOfContainers-1;
+        Sprite[] heartSprites = { emptyHeartSprite, quarterHeartSprite, halfHeartSprite, threeQuarterHeartSprite, fullHeartSprite };
+        int spriteIndex = 0;
+        Debug.Log(heartFraction + " " + currentContainers + " " + spriteIndex);
+        // Determine the correct sprite index based on heartFraction
+        if (numOfContainers > currentContainers+1 && currentContainers > 0)
         {
-            Debug.LogError("Player component not found!");
-            return;
+            switch (heartFraction)
+            {
+                case 0:
+                    spriteIndex = 0; // Empty Heart
+                    currentContainers--;
+                    break;
+                case 1:
+                    spriteIndex = 1; // Quarter Heart
+                    break;
+                case 2:
+                    spriteIndex = 2; // Half Heart
+                    break;
+                case 3:
+                    spriteIndex = 3; // Three-Quarter Heart
+                    break;
+                default:
+                    spriteIndex = 4; // Full Heart
+                    break;
+            }
         }
+
         else
         {
-            Debug.Log("Player component found on " + gameObject.name);
+            spriteIndex = 4;
         }
 
-        // Ensure heartContainers array length matches player's max health
-        if (heartContainers.Length != player.maxHealth)
+        if(!(numOfContainers==currentContainers+1))
         {
-            Debug.LogError("Number of heart containers must match player's max health!");
-            return;
+            //IDK ANYMORE
         }
-    }
-
-    private void Update()
-    {
-        // Update the health UI based on the player's current health
-        UpdateHealthUI(player.hitPoints, player.maxHealth);
-    }
-
-    private void UpdateHealthUI(int currentHealth, int maxHealth)
-    {
-        float fractionPerHeart = 1f / heartContainers.Length;
-
-        for (int i = 0; i < heartContainers.Length; i++)
-        {
-            float heartFraction = (i + 1) * fractionPerHeart;
-
-            if (heartFraction <= currentHealth / (float)maxHealth)
-            {
-                heartContainers[i].sprite = fullHeartSprite;
-            }
-            else if (heartFraction <= (currentHealth - 0.25f) / (float)maxHealth)
-            {
-                heartContainers[i].sprite = threeQuarterHeartSprite;
-            }
-            else if (heartFraction <= (currentHealth - 0.5f) / (float)maxHealth)
-            {
-                heartContainers[i].sprite = halfHeartSprite;
-            }
-            else if (heartFraction <= (currentHealth - 0.75f) / (float)maxHealth)
-            {
-                heartContainers[i].sprite = quarterHeartSprite;
-            }
-            else
-            {
-                heartContainers[i].sprite = emptyHeartSprite;
-            }
-        }
+        // Set the sprite based on emptyContainers and spriteIndex
+        heartContainers[currentContainers].sprite = heartSprites[spriteIndex];
     }
 }

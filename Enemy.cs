@@ -6,7 +6,6 @@ public class Enemy : Character
 {
     [Header("Enemy Specific")]
     [SerializeField] protected float attackCd;
-    private int dmg;
     private float cdTimer;
     private float attackAnimationDuration;
 
@@ -23,7 +22,6 @@ public class Enemy : Character
 
         if (cdTimer >= attackCd)
         {
-            StartCoroutine(AttackCoroutine());
             attack();
         }
     }
@@ -36,7 +34,17 @@ public class Enemy : Character
         cdTimer = 0f; // Reset the cooldown timer
     }
 
-    private bool PlayerInSight()
+    protected override void attack()
+    {
+        base.attack();
+        if (hasHit)
+        {
+            Debug.Log("Starting Coroutine");
+            StartCoroutine(AttackCoroutine());
+        }
+    }
+
+    private bool PlayerInSight() //this is for enemy
     {
         RaycastHit2D hitLeft = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.left, 3, enemyLayers);
         RaycastHit2D hitRight = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.right, 3, enemyLayers);
