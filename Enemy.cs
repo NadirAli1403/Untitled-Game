@@ -6,7 +6,7 @@ public class Enemy : Character
 {
     [Header("Enemy Specific")]
     [SerializeField] protected float attackCd;
-    private float cdTimer;
+    private float cdTimer = 0f;
     private float attackAnimationDuration;
 
 
@@ -31,16 +31,17 @@ public class Enemy : Character
         myAnimator.SetBool("Attack", true);
         yield return new WaitForSeconds(attackAnimationDuration); // Wait for the attack animation to finish
         myAnimator.SetBool("Attack", false); // Reset the attack animation state
-        cdTimer = 0f; // Reset the cooldown timer
     }
 
     protected override void attack()
     {
         base.attack();
+        cdTimer = 0f;
         if (hasHit)
         {
             Debug.Log("Starting Coroutine");
             StartCoroutine(AttackCoroutine());
+            hasHit = false;
         }
     }
 

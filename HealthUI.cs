@@ -21,7 +21,7 @@ public class HealthUI : MonoBehaviour
         int currentContainers = numOfContainers-1;
         Sprite[] heartSprites = { emptyHeartSprite, quarterHeartSprite, halfHeartSprite, threeQuarterHeartSprite, fullHeartSprite };
         int spriteIndex = 0;
-        Debug.Log(heartFraction + " " + currentContainers + " " + spriteIndex);
+        //Debug.Log(heartFraction + " " + currentContainers + " " + spriteIndex);
         // Determine the correct sprite index based on heartFraction
         if (numOfContainers > currentContainers+1 && currentContainers > 0)
         {

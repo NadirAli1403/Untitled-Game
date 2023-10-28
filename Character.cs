@@ -99,9 +99,6 @@ public abstract class Character : MonoBehaviour
         foreach (Collider2D enemy in hitEnemies)
         {
 
-
-            hasHit = true;
-
             Character character = enemy.GetComponent<Character>();
 
             if (character != null)
@@ -125,10 +122,11 @@ public abstract class Character : MonoBehaviour
                 //    Destroy(character);
                 //}
 
-                character.damaged();
-                Debug.Log(enemy + " " + character.hitPoints);
+                character.damaged(damage);
+                hasHit = true;
+                //Debug.Log(enemy + " " + character.hitPoints);
             }
-            hasHit = false;
+
 
         }
     }
@@ -170,9 +168,10 @@ public abstract class Character : MonoBehaviour
         }
     }
 
-    protected virtual void damaged()
+    protected virtual void damaged(int damage)
     {
         hitPoints -= damage;
+        myAnimator.SetTrigger("Hurt");
     }
 
     protected virtual void OnDrawGizmos()
