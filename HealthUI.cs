@@ -16,46 +16,17 @@ public class HealthUI : MonoBehaviour
 
     public void UpdateHealthUI(int currentHealth, int maxHealth)
     {
-        int heartFraction = currentHealth % 4;
-        int numOfContainers = heartContainers.Count;
-        int currentContainers = numOfContainers-1;
-        Sprite[] heartSprites = { emptyHeartSprite, quarterHeartSprite, halfHeartSprite, threeQuarterHeartSprite, fullHeartSprite };
-        int spriteIndex = 0;
-        //Debug.Log(heartFraction + " " + currentContainers + " " + spriteIndex);
-        // Determine the correct sprite index based on heartFraction
-        if (numOfContainers > currentContainers+1 && currentContainers > 0)
+        Debug.Log(heartContainers.Count);
+
+        for (int i = currentHealth; i < maxHealth; i++)
         {
-            switch (heartFraction)
-            {
-                case 0:
-                    spriteIndex = 0; // Empty Heart
-                    currentContainers--;
-                    break;
-                case 1:
-                    spriteIndex = 1; // Quarter Heart
-                    break;
-                case 2:
-                    spriteIndex = 2; // Half Heart
-                    break;
-                case 3:
-                    spriteIndex = 3; // Three-Quarter Heart
-                    break;
-                default:
-                    spriteIndex = 4; // Full Heart
-                    break;
-            }
+            heartContainers[i].sprite = emptyHeartSprite;
         }
 
-        else
+        for (int i=0; i<currentHealth; i++)
         {
-            spriteIndex = 4;
+            heartContainers[i].sprite = fullHeartSprite;
         }
 
-        if(!(numOfContainers==currentContainers+1))
-        {
-            //IDK ANYMORE
-        }
-        // Set the sprite based on emptyContainers and spriteIndex
-        heartContainers[currentContainers].sprite = heartSprites[spriteIndex];
     }
 }
