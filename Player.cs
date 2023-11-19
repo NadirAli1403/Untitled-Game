@@ -6,6 +6,10 @@ public class Player : Character
 {
     [Header("Components")]
     [SerializeField] public HealthUI healthUI;
+    [SerializeField] protected LayerMask findDoor;
+
+
+
     [Header("Slide Attributes")]
     [SerializeField] protected float slideVelocityMultiplier = 2f;
     public bool isSliding = false;
@@ -14,14 +18,17 @@ public class Player : Character
     private float runSpeed = 2.0f;
     private int attackCounter = 0;
     private float cooldown = 2f;
+    public bool isDoorOverlap = false;
+
+    private float _fallSpeedYDampingChangeThreshold;
 
 
     public override void Start()
     {
         base.Start();
-        healthUI = GetComponent<HealthUI>();
         speed = runSpeed;
         isPlayer = true;
+        _fallSpeedYDampingChangeThreshold = CameraManager.instance._fallSpeedYDampingChangeThreshold;
     }
     public override void Update()
     {
@@ -30,6 +37,27 @@ public class Player : Character
         attack();
         handleSliding();
         healthUI.UpdateHealthUI(hitPoints, maxHealth);
+        isDoorOverlap = Physics2D.OverlapCircle(groundCheck.position, radOCircle, findDoor);
+        if (isDoorOverlap)
+        {
+            Debug.Log("SPAM");
+        }
+
+        //if we are falling past a speed threshold
+
+        if (rb2D.velocity.y < _fallSpeedYDampingChangeThreshold && !CameraManager.instance.isLerypingYDamping && !CameraManager.instance.lerpedFromPlayerFalling)
+        {
+            CameraManager.instance.LerpYDamping(true);
+            
+        }
+
+        //if we are still moving up or stood still
+        if (rb2D.velocity.y >=0f && !CameraManager.instance.isLerypingYDamping && !CameraManager.instance.lerpedFromPlayerFalling)
+        {
+            //reset so it can be called again
+            CameraManager.instance.lerpedFromPlayerFalling = false;
+            CameraManager.instance.LerpYDamping(false);
+        }
     }
 
     protected override void handleJumping()
@@ -67,7 +95,7 @@ public class Player : Character
 
     protected virtual void handleSliding()
     {
-        if (isPlayer && Input.GetKeyDown(KeyCode.C) && isGrounded && !isSliding)
+        if (isPlayer && Input.GetKeyDown(KeyCode.C) && isGrounded && !isSliding) // check if the player is not already sliding, grounded and pressed the correct key
         {
             StartSlide();
         }
@@ -75,7 +103,7 @@ public class Player : Character
         // Check if sliding
         if (isSliding)
         {
-            slideTimer -= Time.deltaTime;
+            slideTimer -= Time.deltaTime; //slide timer counts down
             if (slideTimer <= 0f)
             {
                 StopSlide();

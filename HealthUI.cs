@@ -16,7 +16,6 @@ public class HealthUI : MonoBehaviour
 
     public void UpdateHealthUI(int currentHealth, int maxHealth)
     {
-        Debug.Log(heartContainers.Count);
 
         for (int i = currentHealth; i < maxHealth; i++)
         {

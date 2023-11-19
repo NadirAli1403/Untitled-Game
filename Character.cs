@@ -27,6 +27,7 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected Transform groundCheck;
     [SerializeField] protected float radOCircle;
     [SerializeField] protected LayerMask findGround;
+ 
     protected bool isGrounded;
     protected float jumpTimeCounter;
     protected bool stoppedJumping;
@@ -103,28 +104,9 @@ public abstract class Character : MonoBehaviour
 
             if (character != null)
             {
-                //if (character.isPlayer)
-                //{
-
-                //    character.hitPoints -= damage - 1;
-                //    damaged(character);
-                //    Debug.Log("Test");
-                //}
-                //else
-                //{
-                //    character.myAnimator.SetTrigger("Hurt");
-                //    character.hitPoints -= damage;
-                //    Debug.Log(enemy + " " + character.hitPoints);
-
-                //}
-                //if (character.hitPoints <= 0 && !character.isPlayer)
-                //{
-                //    Destroy(character);
-                //}
-
                 character.damaged(damage);
                 hasHit = true;
-                //Debug.Log(enemy + " " + character.hitPoints);
+
             }
 
 
@@ -188,23 +170,3 @@ public abstract class Character : MonoBehaviour
 
 #endregion
 
-//GameObject player = enemy.gameObject;
-//Debug.Log("Player is here");
-//Transform playerTransform = player.transform;
-//Vector2 playerPos = playerTransform.position;
-//Vector2 enemyAttackPos = attackPoint.position;
-//float distance = Vector2.Distance(playerPos, enemyAttackPos);
-//float nearMissTolerance = 1.5f;
-
-//if (distance < attackRange * nearMissTolerance)
-//{
-//    // The player is within the attack range, so it's a hit
-//    Debug.Log("Hit player");
-//    // Handle the hit here, e.g., reduce player health
-//}
-//else
-//{
-//    // The player dodged the attack at the last second
-//    Debug.Log("Missed player");
-//    // Handle the miss here, e.g., play a dodge animation
-//}
