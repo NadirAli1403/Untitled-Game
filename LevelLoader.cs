@@ -13,11 +13,14 @@ public class LevelLoader : MonoBehaviour
 
     [SerializeField] public Player player;
 
+    private bool isDoorOverlap;
+
+    public bool nextLevel;
+
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.W) && player.isDoorOverlap)
+        if(Input.GetKeyDown(KeyCode.W) && isDoorOverlap)
         {
-            Debug.Log("Overlap");
             LoadNextLevel();
         }
     }
@@ -37,5 +40,13 @@ public class LevelLoader : MonoBehaviour
 
         //load scene
         SceneManager.LoadScene(levelIndex);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.name == "Player")
+        {
+            isDoorOverlap = true;
+        }
     }
 }

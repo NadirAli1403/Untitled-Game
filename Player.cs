@@ -18,7 +18,6 @@ public class Player : Character
     private float runSpeed = 2.0f;
     private int attackCounter = 0;
     private float cooldown = 2f;
-    public bool isDoorOverlap = false;
 
     private float _fallSpeedYDampingChangeThreshold;
 
@@ -37,12 +36,6 @@ public class Player : Character
         attack();
         handleSliding();
         healthUI.UpdateHealthUI(hitPoints, maxHealth);
-        isDoorOverlap = Physics2D.OverlapCircle(groundCheck.position, radOCircle, findDoor);
-        if (isDoorOverlap)
-        {
-            Debug.Log("SPAM");
-        }
-
         //if we are falling past a speed threshold
 
         if (rb2D.velocity.y < _fallSpeedYDampingChangeThreshold && !CameraManager.instance.isLerypingYDamping && !CameraManager.instance.lerpedFromPlayerFalling)
