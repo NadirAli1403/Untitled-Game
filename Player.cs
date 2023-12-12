@@ -5,8 +5,10 @@ using UnityEngine;
 public class Player : Character
 {
     [Header("Components")]
+    public CapsuleCollider2D capsuleCollider;
     [SerializeField] public HealthUI healthUI;
     [SerializeField] protected LayerMask findDoor;
+    
 
 
 
@@ -25,6 +27,7 @@ public class Player : Character
     public override void Start()
     {
         base.Start();
+        capsuleCollider = GetComponent<CapsuleCollider2D>();
         speed = runSpeed;
         isPlayer = true;
         _fallSpeedYDampingChangeThreshold = CameraManager.instance._fallSpeedYDampingChangeThreshold;
@@ -111,6 +114,16 @@ public class Player : Character
         myAnimator.SetBool("Sliding", true); // Set a trigger in your animator to play the sliding animation
     }
 
+    protected override void checkAlive()
+    {
+        base.checkAlive();
+        if (hitPoints <= 0)
+        {
+            //remove the rigid body component to allow enemies to pass through
+            capsuleCollider.enabled = false;
+            this.enabled = false;
+        }
+    }
     protected virtual void StopSlide()
     {
         speed = 2;

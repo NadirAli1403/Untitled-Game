@@ -4,12 +4,23 @@ using UnityEngine;
 
 public class Enemy : Character
 {
+    [Header("Components")]
+    public BoxCollider2D boxCollider;
+
+
+
     [Header("Enemy Specific")]
     [SerializeField] protected float attackCd;
     private float cdTimer = 0f;
     private float attackAnimationDuration;
 
 
+
+    public override void Start()
+    {
+        base.Start();
+        boxCollider = GetComponent<BoxCollider2D>();
+    }
 
 
     // Update is called once per frame
@@ -26,6 +37,16 @@ public class Enemy : Character
         }
     }
 
+    protected override void checkAlive()
+    {
+        base.checkAlive();
+        if (hitPoints <= 0)
+        {
+            //remove the rigid body component to allow player to pass through
+            boxCollider.enabled = false;
+            this.enabled = false;
+        }
+    }
     private IEnumerator AttackCoroutine()
     {
         myAnimator.SetBool("Attack", true);

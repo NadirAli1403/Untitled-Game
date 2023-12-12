@@ -12,7 +12,6 @@ public abstract class Character : MonoBehaviour
     [Header("Components")]
     public Rigidbody2D rb2D;
     public Animator myAnimator;
-    public BoxCollider2D boxCollider;
     protected internal bool hasHit = false;
     public Transform characterTransform;
 
@@ -46,6 +45,9 @@ public abstract class Character : MonoBehaviour
     [SerializeField] public int maxHealth;
     protected bool isPlayer = false;
 
+    [Header("Other")]
+    protected float deathAnimationDuration;
+
 
     #region monos
     public virtual void Start()
@@ -69,6 +71,7 @@ public abstract class Character : MonoBehaviour
         }
 
         handleJumping();
+        checkAlive();
     }
 
     public virtual void FixedUpdate()
@@ -106,7 +109,6 @@ public abstract class Character : MonoBehaviour
             {
                 character.damaged(damage);
                 hasHit = true;
-
             }
 
 
@@ -128,7 +130,22 @@ public abstract class Character : MonoBehaviour
         jump();
     }
 
+    private IEnumerator DeathCoroutine()
+    {
+        myAnimator.SetBool("Dead", true);
+        yield return new WaitForSeconds(deathAnimationDuration); // Wait for the attack animation to finish
+        myAnimator.SetBool("Dead", false); // Reset the attack animation state
+    }
 
+    protected virtual void checkAlive()
+    {
+        if (hitPoints <= 0)
+        {
+            myAnimator.SetBool("Dead", true);
+            this.rb2D.bodyType = RigidbodyType2D.Static;
+
+        }
+    }
     protected void turnAround(float horizontal)
     {
         if (horizontal < 0 && facingRight || horizontal > 0 && !facingRight)
@@ -154,6 +171,7 @@ public abstract class Character : MonoBehaviour
     {
         hitPoints -= damage;
         myAnimator.SetTrigger("Hurt");
+        checkAlive();
     }
 
     protected virtual void OnDrawGizmos()
