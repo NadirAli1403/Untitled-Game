@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Player : Character
 {
@@ -8,9 +9,9 @@ public class Player : Character
     public CapsuleCollider2D capsuleCollider;
     [SerializeField] public HealthUI healthUI;
     [SerializeField] protected LayerMask findDoor;
-    
-
-
+    [SerializeField] protected GameObject pauseBackground;
+    [SerializeField] protected GameObject settingsBackground;
+    protected bool paused = false;
 
     [Header("Slide Attributes")]
     [SerializeField] protected float slideVelocityMultiplier = 2f;
@@ -22,11 +23,12 @@ public class Player : Character
     private float cooldown = 2f;
 
     private float _fallSpeedYDampingChangeThreshold;
-
+    internal Vector3 position;
 
     public override void Start()
     {
         base.Start();
+        pauseBackground.SetActive(paused);
         capsuleCollider = GetComponent<CapsuleCollider2D>();
         speed = runSpeed;
         isPlayer = true;
@@ -34,25 +36,34 @@ public class Player : Character
     }
     public override void Update()
     {
-        base.Update();
-        direction = Input.GetAxis("Horizontal"); //this is for player
-        attack();
-        handleSliding();
-        healthUI.UpdateHealthUI(hitPoints, maxHealth);
-        //if we are falling past a speed threshold
-
-        if (rb2D.velocity.y < _fallSpeedYDampingChangeThreshold && !CameraManager.instance.isLerypingYDamping && !CameraManager.instance.lerpedFromPlayerFalling)
+        if (!paused)
         {
-            CameraManager.instance.LerpYDamping(true);
-            
+            pauseMenu();
+            base.Update();
+            direction = Input.GetAxis("Horizontal"); //this is for player
+            attack();
+            rangedAttack();
+            handleSliding();
+            healthUI.UpdateHealthUI(hitPoints, maxHealth);
+            //if we are falling past a speed threshold
+
+            if (rb2D.velocity.y < _fallSpeedYDampingChangeThreshold && !CameraManager.instance.isLerypingYDamping && !CameraManager.instance.lerpedFromPlayerFalling)
+            {
+                CameraManager.instance.LerpYDamping(true);
+
+            }
+
+            //if we are still moving up or stood still
+            if (rb2D.velocity.y >= 0f && !CameraManager.instance.isLerypingYDamping && !CameraManager.instance.lerpedFromPlayerFalling)
+            {
+                //reset so it can be called again
+                CameraManager.instance.lerpedFromPlayerFalling = false;
+                CameraManager.instance.LerpYDamping(false);
+            }
         }
-
-        //if we are still moving up or stood still
-        if (rb2D.velocity.y >=0f && !CameraManager.instance.isLerypingYDamping && !CameraManager.instance.lerpedFromPlayerFalling)
+        else
         {
-            //reset so it can be called again
-            CameraManager.instance.lerpedFromPlayerFalling = false;
-            CameraManager.instance.LerpYDamping(false);
+            pauseMenu();
         }
     }
 
@@ -106,6 +117,25 @@ public class Player : Character
             }
         }
     }
+
+    protected virtual void pauseMenu()
+    {
+
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            pauseBackground.SetActive(true);
+            Time.timeScale = 0f;
+            paused = !paused;
+        }
+
+        if(paused == false)
+        {
+            pauseBackground.SetActive(false);
+            settingsBackground.SetActive(false);
+            Time.timeScale = 1f;
+        }
+    }
+
     protected virtual void StartSlide()
     {
         isSliding = true;
@@ -136,6 +166,7 @@ public class Player : Character
         if (Input.GetMouseButtonDown(0))
         {
             base.attack();
+            canMove = false;
             attackCounter ++;
             rb2D.velocity = new Vector2(0, rb2D.velocity.y);
 
@@ -168,6 +199,7 @@ public class Player : Character
             myAnimator.ResetTrigger("Attack_2");
             myAnimator.ResetTrigger("Attack_3");
             hasHit = false;
+            canMove = true;
   
         }
         if (attackCounter > 3 || Time.time - attackLength > cooldown)
@@ -177,5 +209,13 @@ public class Player : Character
 
 
     }
+    protected void rangedAttack()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            myAnimator.SetTrigger("RangedAttack");
+        }
+    }
+
 
 }

@@ -19,6 +19,7 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected float speed = 1.0f;
     [SerializeField] protected float direction;
     [SerializeField] protected bool facingRight;
+    protected bool canMove = true;
 
     [Header("Jump Variables")]
     [SerializeField] protected float jumpForce;
@@ -26,8 +27,8 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected Transform groundCheck;
     [SerializeField] protected float radOCircle;
     [SerializeField] protected LayerMask findGround;
- 
-    protected bool isGrounded;
+
+    [SerializeField] protected bool isGrounded;
     protected float jumpTimeCounter;
     protected bool stoppedJumping;
 
@@ -36,6 +37,10 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected float attackLength;
     [SerializeField] protected float attackRange = 0.5f;
     [SerializeField] protected internal Transform attackPoint;
+    [SerializeField] private float invincibilityTime = 0.25f;
+    public bool isInvincible = false;
+    private float timeSinceHit = 0f;
+    public bool isAlive = true;
 
 
 
@@ -45,8 +50,7 @@ public abstract class Character : MonoBehaviour
     [SerializeField] public int maxHealth;
     protected bool isPlayer = false;
 
-    [Header("Other")]
-    protected float deathAnimationDuration;
+
 
 
     #region monos
@@ -69,14 +73,19 @@ public abstract class Character : MonoBehaviour
             myAnimator.SetBool("Falling", true);
             myAnimator.ResetTrigger("Jumped");
         }
-
-        handleJumping();
         checkAlive();
+
+
+        if (isInvincible)
+        {
+            iFrames();
+        }
     }
 
     public virtual void FixedUpdate()
     {
         // handles mechanics/physics
+        handleJumping();
         handleMovement();
         layerHandler();
         myAnimator.ResetTrigger("Hurt");
@@ -87,7 +96,9 @@ public abstract class Character : MonoBehaviour
     #region mechanics
     protected virtual void move()
     {
+
         rb2D.velocity = new Vector2(direction * speed, rb2D.velocity.y);
+
 
     }
 
@@ -105,10 +116,11 @@ public abstract class Character : MonoBehaviour
 
             Character character = enemy.GetComponent<Character>();
 
-            if (character != null)
+            if (character != null && !character.isInvincible)
             {
                 character.damaged(damage);
                 hasHit = true;
+                character.isInvincible = true;
             }
 
 
@@ -130,17 +142,13 @@ public abstract class Character : MonoBehaviour
         jump();
     }
 
-    private IEnumerator DeathCoroutine()
-    {
-        myAnimator.SetBool("Dead", true);
-        yield return new WaitForSeconds(deathAnimationDuration); // Wait for the attack animation to finish
-        myAnimator.SetBool("Dead", false); // Reset the attack animation state
-    }
+
 
     protected virtual void checkAlive()
     {
-        if (hitPoints <= 0)
+        if (hitPoints <= 0 && isAlive)
         {
+            isAlive = false;
             myAnimator.SetBool("Dead", true);
             this.rb2D.bodyType = RigidbodyType2D.Static;
 
@@ -167,7 +175,7 @@ public abstract class Character : MonoBehaviour
         }
     }
 
-    protected virtual void damaged(int damage)
+    public void damaged(int damage)
     {
         hitPoints -= damage;
         myAnimator.SetTrigger("Hurt");
@@ -184,7 +192,31 @@ public abstract class Character : MonoBehaviour
             return;
         Gizmos.DrawWireSphere(attackPoint.position, attackRange);
     }
+
+    protected virtual void iFrames()
+    {
+        if (isInvincible)
+        {
+            timeSinceHit += Time.deltaTime;
+            if (timeSinceHit > invincibilityTime)
+            {
+                //after the time since is longer than the intended i-frames
+                isInvincible = false;
+                timeSinceHit = 0;
+                Debug.Log("Iframes are off");
+            }
+        }
+    }
+
+    #endregion
+
+    #region Getters
+    public virtual float getDirection()
+    {
+        return direction;
+    }
+
+
+    #endregion
+
 }
-
-#endregion
-
