@@ -113,8 +113,8 @@ public abstract class Character : MonoBehaviour
 
         foreach (Collider2D enemy in hitEnemies)
         {
-
             Character character = enemy.GetComponent<Character>();
+            
 
             if (character != null && !character.isInvincible)
             {
@@ -149,7 +149,7 @@ public abstract class Character : MonoBehaviour
         if (hitPoints <= 0 && isAlive)
         {
             isAlive = false;
-            myAnimator.SetBool("Dead", true);
+            myAnimator.SetTrigger("Dead");
             this.rb2D.bodyType = RigidbodyType2D.Static;
 
         }
@@ -163,7 +163,7 @@ public abstract class Character : MonoBehaviour
         }
     }
 
-    protected void layerHandler()
+    protected virtual void layerHandler()
     {
         if (!isGrounded)
         {

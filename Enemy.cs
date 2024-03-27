@@ -11,8 +11,8 @@ public class Enemy : Character
 
     [Header("Enemy Specific")]
     [SerializeField] protected float attackCd;
-    private float cdTimer = 0f;
-    private float attackAnimationDuration;
+    protected float cdTimer = 0f;
+    protected float attackAnimationDuration;
 
 
 
@@ -66,7 +66,7 @@ public class Enemy : Character
         }
     }
 
-    private bool PlayerInSight() //this is for enemy
+    protected bool PlayerInSight() //this is for enemy
     {
         RaycastHit2D hitLeft = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.left, 3, enemyLayers);
         RaycastHit2D hitRight = Physics2D.BoxCast(boxCollider.bounds.center, boxCollider.bounds.size, 0, Vector2.right, 3, enemyLayers);

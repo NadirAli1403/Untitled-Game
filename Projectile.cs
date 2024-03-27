@@ -26,11 +26,12 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Character character = collision.GetComponent<Character>();
-        if (character != null && collision.gameObject.layer==enemyLayers)
+        Enemy enemy = collision.GetComponent<Enemy>();
+        if (enemy != null)
         {
-            character.damaged(damage);
+            enemy.damaged(damage);
             Destroy(gameObject);
         }
     }
 }
+//&& collision.gameObject.layer==enemyLayers
